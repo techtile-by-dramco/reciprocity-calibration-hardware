@@ -312,7 +312,7 @@ public:
     ///@param[in] ref_in - Frequency in MHz
     ///
     ///@returns None
-    void setPFD(const double ref_in, const uint16_t rdiv);
+    void setPFD(const double ref_in,const uint16_t rdiv, const bool dbr);
     
     double getPFD();
     
@@ -338,6 +338,9 @@ public:
     void disable_output();
     void enable_output();
 
+    void getAll(uint8_t *buffer, uint8_t size);
+
+    void setRegister(uint8_t reg, uint16_t value);
 private:
 
     // SPI &m_spiBus;

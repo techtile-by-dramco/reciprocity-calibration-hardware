@@ -30,6 +30,7 @@
 #define REGISTER_SETTINGS_LED_MODE              0x07
 #define REGISTER_SETTINGS_LED_BLINK_ON_TIME     0x08
 #define REGISTER_SETTINGS_LED_BLINK_OFF_TIME    0x09
+#define REGISTER_SETTINGS_PLL_REFERENCE_DOUBLER 0x0A
 
 #define REGISTER_START_SETTINGS                 0x00
 #define REGISTER_END_SETTINGS                   0x10
@@ -71,6 +72,9 @@
 #define SETTINGS_LED_MODE                       LED_MODE_BLINK // 0: Off, 1: On, 2: Blink, 3: PPS blink, 4: Lock detect, 5: Lock detect && PPS blink, PPS not implemented in V1
 #define SETTINGS_LED_BLINK_ON_TIME              20 // *10 ms
 #define SETTINGS_LED_BLINK_OFF_TIME             80 // *10 ms
+
+// --------- DIRECT ACCESS TO PLL REGISTERS ---------
+#define PLL_DIRECT_ACCESS_MASK                  0xF0
 
 enum address_i2c_t : byte{
     ADDRESS_I2C = 0x2F // Address of I2C device
@@ -192,7 +196,7 @@ void loop(){
   if(registerMapSettingsUpdate){
     updateEEPROM();
     uint16_t frequency = (uint16_t) ( registerMap[REGISTER_SETTINGS_PLL_REFERENCE_CLOCK] | (uint16_t)registerMap[REGISTER_SETTINGS_PLL_REFERENCE_CLOCK+1]<<8 );
-    max2871.setPFD(frequency, registerMap[REGISTER_SETTINGS_PLL_REFERENCE_DIVIDER]);
+    max2871.setPFD(frequency, registerMap[REGISTER_SETTINGS_PLL_REFERENCE_DIVIDER], registerMap[REGISTER_SETTINGS_PLL_REFERENCE_DOUBLER]);
 #ifdef DEBUG
     Serial.print("c:");
     Serial.println(frequency);
@@ -216,7 +220,7 @@ void loop(){
 
     // Repeat this, to be on the save side
     uint16_t frequency = (uint16_t) ( registerMap[REGISTER_SETTINGS_PLL_REFERENCE_CLOCK] | (uint16_t)registerMap[REGISTER_SETTINGS_PLL_REFERENCE_CLOCK+1]<<8 );
-    max2871.setPFD(frequency, registerMap[REGISTER_SETTINGS_PLL_REFERENCE_DIVIDER]);
+    max2871.setPFD(frequency, registerMap[REGISTER_SETTINGS_PLL_REFERENCE_DIVIDER], registerMap[REGISTER_SETTINGS_PLL_REFERENCE_DOUBLER]);
 
     frequency = (uint16_t) ( registerMap[REGISTER_PLL_FREQUENCY] | (uint16_t)registerMap[REGISTER_PLL_FREQUENCY+1]<<8 );
     if((frequency < 100) && (frequency > 6000)){ 
@@ -310,6 +314,12 @@ void i2cWriteCallback(const uint8_t data[], const uint8_t length){
         registerMapSettingsUpdate = true;
       }
     }
+  }else if(data[0] & PLL_DIRECT_ACCESS_MASK == PLL_DIRECT_ACCESS_MASK){
+    if(length > 1){
+      for(uint8_t i = 1; i < length; i++){
+        max2871.setRegister(data[0]& ~PLL_DIRECT_ACCESS_MASK, data[i]);
+      }
+    }
   }
 }
 
@@ -319,12 +329,19 @@ void i2cReadCallback(void){
   Serial.println("I2C read");
 #endif
 
-  uint8_t size = REGISTER_RESPONSE_SIZE; 
-  if(lastRegister + REGISTER_RESPONSE_SIZE > REGISTER_MAP_SIZE){
-    size = REGISTER_MAP_SIZE - lastRegister;
-  } 
+  if(lastRegister & PLL_DIRECT_ACCESS_MASK == PLL_DIRECT_ACCESS_MASK){
+    uint8_t pllRegister = lastRegister & ~PLL_DIRECT_ACCESS_MASK;
+    uint8_t buffer[7] = {0};
+    max2871.getAll(buffer, 7);
+    i2c.SlaveQueueNonBlocking(buffer+pllRegister, 7-pllRegister);
+  }else{
+    uint8_t size = REGISTER_RESPONSE_SIZE; 
+    if(lastRegister + REGISTER_RESPONSE_SIZE > REGISTER_MAP_SIZE){
+      size = REGISTER_MAP_SIZE - lastRegister;
+    } 
 
-  i2c.SlaveQueueNonBlocking(registerMap + lastRegister, size);
+    i2c.SlaveQueueNonBlocking(registerMap + lastRegister, size);
+  }
 }
 
 void ppsISR(void){

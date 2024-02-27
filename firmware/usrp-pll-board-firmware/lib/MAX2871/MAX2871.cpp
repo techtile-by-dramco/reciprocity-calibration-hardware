@@ -201,12 +201,16 @@ void MAX2871::setRFOUTA(const double freq)
     f_rfouta = f_pfd*(reg0.bits.n+1.0*reg0.bits.frac/reg1.bits.m)/powf(2,reg4.bits.diva);
 }
 
-void MAX2871::setPFD(const double ref_in,const uint16_t rdiv)
+void MAX2871::setPFD(const double ref_in,const uint16_t rdiv, const bool dbr)
 {
-    f_pfd = ref_in/rdiv;//*2;
+    uint8_t multiplier = 1;
+    if(dbr)
+        multiplier = 2;
+    f_pfd = ref_in/rdiv*multiplier*2;
 
     // x2
-    //reg2.bits.dbr = 1;
+    if(multiplier == 2)
+        reg2.bits.dbr = 1;
     
     if(f_pfd > 32.0)
         reg2.bits.lds = 1;
@@ -332,4 +336,33 @@ void MAX2871::enable_output(){
     reg4.bits.rfb_en = 0;
     
     updateAll(); 
+}
+
+void MAX2871::getAll(uint8_t *buffer, uint8_t size){
+    if(size > 0)
+        buffer[0] = reg0.all;
+    if(size > 1)
+        buffer[1] = reg1.all;
+    if(size > 2)
+        buffer[2] = reg2.all;
+    if(size > 3)
+        buffer[3] = reg3.all;
+    if(size > 4)
+        buffer[4] = reg4.all;
+    if(size > 5)
+        buffer[5] = reg5.all;
+    if(size > 6)
+        buffer[6] = reg5.all;
+}
+
+void MAX2871::setRegister(uint8_t reg, uint16_t value){
+    switch(reg){
+        case 0: reg0.all = value; break;
+        case 1: reg1.all = value; break;
+        case 2: reg2.all = value; break;
+        case 3: reg3.all = value; break;
+        case 4: reg4.all = value; break;
+        case 5: reg5.all = value; break;
+        case 6: reg6.all = value; break;
+    }
 }
