@@ -18,6 +18,12 @@
 #define CE        9 
 #define LED       6
 #define PPS       2
+#define SWITCH1_V1  A6
+#define SWITCH2_V1  A1
+#define SWITCH2_V2  A2
+#define SWITCH3_V1  A7
+#define SWITCH3_V2  A3
+#define SWITCH4_V1  A0
 
 // -------- REGISTER BANK -------------
 // 0x0?: SETTINGS
@@ -42,7 +48,13 @@
 #define REGISTER_PLL_LOCK_DETECTED              0x14 // Read only
 #define REGISTER_PLL_MODE                       0x15 // Read only
 
-#define REGISTER_MAP_SIZE                       REGISTER_PLL_MODE+1
+// 0x2?: Switch board operation (GPIO control)
+#define REGISTER_SWITCH1_VALUE                  0x20
+#define REGISTER_SWITCH2_VALUE                  0x21
+#define REGISTER_SWITCH3_VALUE                  0x22
+#define REGISTER_SWITCH4_VALUE                  0x23
+
+#define REGISTER_MAP_SIZE                       REGISTER_SWITCH4_VALUE+1
 #define REGISTER_MAP_NR_READ_ONLY               2
 
 // Register bank settings
@@ -145,6 +157,12 @@ void setup(){
   pinMode(SCLK, OUTPUT);
   pinMode(LED, OUTPUT);
   pinMode(PPS, INPUT);
+  pinMode(SWITCH1_V1, OUTPUT);
+  pinMode(SWITCH2_V1, OUTPUT);
+  pinMode(SWITCH2_V2, OUTPUT);
+  pinMode(SWITCH3_V1, OUTPUT);
+  pinMode(SWITCH3_V2, OUTPUT);
+  pinMode(SWITCH1_V1, OUTPUT);
 
   attachInterrupt(digitalPinToInterrupt(PPS), ppsISR, RISING);
 
@@ -237,7 +255,18 @@ void loop(){
         max2871.disable_output();
       }
     }
-  registerMapUpdate = false;
+    // Switch 1
+    digitalWrite(SWITCH1_V1, registerMap[REGISTER_SWITCH1_VALUE]);
+    // Switch 2
+    digitalWrite(SWITCH2_V1, bitRead(registerMap[REGISTER_SWITCH2_VALUE], 1));
+    digitalWrite(SWITCH2_V2, bitRead(registerMap[REGISTER_SWITCH2_VALUE], 0));
+    // Switch 3
+    digitalWrite(SWITCH3_V1, bitRead(registerMap[REGISTER_SWITCH3_VALUE], 1));
+    digitalWrite(SWITCH3_V2, bitRead(registerMap[REGISTER_SWITCH3_VALUE], 0));
+    // Switch 1
+    digitalWrite(SWITCH4_V1, registerMap[REGISTER_SWITCH4_VALUE]);
+
+    registerMapUpdate = false;
   }
 
   // Set readonly registers
