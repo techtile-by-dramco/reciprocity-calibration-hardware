@@ -9,15 +9,15 @@
 #define DEBUG
 
 // -------- HARDWARE PINS -------------
-#define MOSI      11
-#define MISO      12
-#define SCLK      13
-#define LE        10
-#define LD        8
-#define RFOUTEN   7
-#define CE        9 
-#define LED       6
-#define PPS       2
+#define MOSI        11
+#define MISO        12
+#define SCLK        13
+#define LE          10
+#define LD          8
+#define RFOUTEN     7
+#define CE          9 
+#define LED         6
+#define PPS         2
 #define SWITCH1_V1  A6
 #define SWITCH2_V1  A1
 #define SWITCH2_V2  A2
@@ -54,13 +54,13 @@
 #define REGISTER_SWITCH3_VALUE                  0x22
 #define REGISTER_SWITCH4_VALUE                  0x23
 
-#define REGISTER_MAP_SIZE                       REGISTER_SWITCH4_VALUE+1
-#define REGISTER_MAP_NR_READ_ONLY               2
-
 // Register bank settings
 #define EEPROM_STATUS_ADDRESS                   0
 #define EEPROM_START_ADDRESS                    1
 #define REGISTER_RESPONSE_SIZE                  32
+
+#define REGISTER_MAP_SIZE                       REGISTER_SWITCH4_VALUE+1
+#define REGISTER_MAP_NR_READ_ONLY               2
 
 // -------- VALUES CONSTANTS -----------
 #define EEPROM_DISABLE                          0
@@ -73,6 +73,24 @@
 #define LED_MODE_PPS_BLINK                      3
 #define LED_MODE_LOCK_DETECT                    4
 #define LED_MODE_PPS_BLINK_AND_LOCK_DETECT      5
+
+// Switch 1
+#define SWITCH_RFATXRX_LOOP                     0
+#define SWITCH_RFATXRX_OUT                      1
+// Switch 2
+#define SWITCH_SHUTDOWN                         0
+#define SWITCH_RFARX2_RF                        1
+#define SWITCH_RFARX2_LOOP                      2
+#define SWITCH_RFARX2_OUT                       3
+// Switch 3
+// Also shutdown supported, same constant as 2
+#define SWITCH_RFBRX2_RF                        1
+#define SWITCH_RFBRX2_LOOP                      2
+#define SWITCH_RFBRX2_OUT                       3
+// Switch 4
+#define SWITCH_RFBTXRX_LOOP                     0
+#define SWITCH_RFBTXRX_OUT                      1
+
 
 // -------- DEFAULT VALUES -----------
 #define SETTINGS_DEVICE_ID                      0
@@ -157,12 +175,6 @@ void setup(){
   pinMode(SCLK, OUTPUT);
   pinMode(LED, OUTPUT);
   pinMode(PPS, INPUT);
-  pinMode(SWITCH1_V1, OUTPUT);
-  pinMode(SWITCH2_V1, OUTPUT);
-  pinMode(SWITCH2_V2, OUTPUT);
-  pinMode(SWITCH3_V1, OUTPUT);
-  pinMode(SWITCH3_V2, OUTPUT);
-  pinMode(SWITCH1_V1, OUTPUT);
 
   attachInterrupt(digitalPinToInterrupt(PPS), ppsISR, RISING);
 
@@ -255,6 +267,7 @@ void loop(){
         max2871.disable_output();
       }
     }
+
     // Switch 1
     digitalWrite(SWITCH1_V1, registerMap[REGISTER_SWITCH1_VALUE]);
     // Switch 2
