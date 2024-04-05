@@ -10757,10 +10757,10 @@ Source: &lt;a href="https://www.susumu.co.jp/common/pdf/n_catalog_partition16_en
 <part name="GND13" library="supply1" deviceset="GND" device=""/>
 <part name="GND14" library="supply1" deviceset="GND" device=""/>
 <part name="C22" library="rcl" deviceset="C-EU" device="C0603" value="820p"/>
-<part name="R6" library="rcl" deviceset="R-EU_" device="R0603" value="240"/>
-<part name="C23" library="rcl" deviceset="C-EU" device="C0603" value="100n"/>
-<part name="R7" library="rcl" deviceset="R-EU_" device="R0603" value="30.1"/>
-<part name="R8" library="rcl" deviceset="R-EU_" device="R0603" value="91"/>
+<part name="R6" library="rcl" deviceset="R-EU_" device="R0603" value="1k"/>
+<part name="C23" library="rcl" deviceset="C-EU" device="C0603" value="10u"/>
+<part name="R7" library="rcl" deviceset="R-EU_" device="R0603" value="100"/>
+<part name="R8" library="rcl" deviceset="R-EU_" device="R0603" value="330"/>
 <part name="C24" library="rcl" deviceset="C-EU" device="C0603" value="12n"/>
 <part name="GND15" library="supply1" deviceset="GND" device=""/>
 <part name="GND16" library="supply1" deviceset="GND" device=""/>
@@ -11357,6 +11357,7 @@ polarity protection</text>
 <wire x1="45.974" y1="46.736" x2="45.974" y2="5.08" width="0.1524" layer="95"/>
 <wire x1="45.974" y1="46.736" x2="161.29" y2="46.736" width="0.1524" layer="95"/>
 <wire x1="161.29" y1="46.736" x2="161.29" y2="25.146" width="0.1524" layer="95"/>
+<text x="175.26" y="86.36" size="1.778" layer="91">Look into using ECHU caps in filter</text>
 </plain>
 <instances>
 <instance part="FRAME1" gate="G$1" x="0" y="0"/>
