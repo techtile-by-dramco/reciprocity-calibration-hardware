@@ -18,10 +18,10 @@
 #define CE          9 
 #define LED         6
 #define PPS         2
-#define SWITCH1_V1  A6
+#define SWITCH1_V1  3
 #define SWITCH2_V1  A1
 #define SWITCH2_V2  A2
-#define SWITCH3_V1  A7
+#define SWITCH3_V1  4
 #define SWITCH3_V2  A3
 #define SWITCH4_V1  A0
 

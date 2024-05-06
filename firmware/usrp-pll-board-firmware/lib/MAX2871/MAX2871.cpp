@@ -206,7 +206,7 @@ void MAX2871::setPFD(const double ref_in,const uint16_t rdiv, const bool dbr)
     uint8_t multiplier = 1;
     if(dbr)
         multiplier = 2;
-    f_pfd = ref_in/rdiv*multiplier*2;
+    f_pfd = ref_in/rdiv*multiplier;
 
     // x2
     if(multiplier == 2)
