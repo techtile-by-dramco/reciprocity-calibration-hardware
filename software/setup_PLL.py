@@ -30,7 +30,7 @@ def main():
     print("locking", end="")
     while not p.locked():
         print(".", end="")
-        time.sleep(0.5)
+        time.sleep(0.1)
 
     print("\nLocked")
 
