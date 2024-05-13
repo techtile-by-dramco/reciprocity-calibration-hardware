@@ -27,7 +27,7 @@ def main():
 
     p.frequency(freq)
 
-    print("locking")
+    print("locking", end="")
     while not p.locked():
         print(".", end="")
         time.sleep(0.5)
