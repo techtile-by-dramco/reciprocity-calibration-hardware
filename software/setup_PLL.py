@@ -1,4 +1,5 @@
 # example script to lock PLL to freq
+# usage setup_PLL.py --freq 920
 
 import pll
 import time 
