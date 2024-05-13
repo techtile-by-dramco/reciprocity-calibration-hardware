@@ -54,7 +54,7 @@ class PLL(object):
 
         self.output = self.get_PLL_enable_output()
         self.power = self.get_PLL_power()
-        self.frequency = self.get_PLL_frequency()
+        self._frequency = self.get_PLL_frequency()
 
         self.divider = self.get_PLL_reference_divider()
         self.reference_clock = self.get_PLL_reference_clock()
@@ -122,7 +122,7 @@ class PLL(object):
 
     def set_PLL_frequency(self, v):
         self._device.write16(REGISTER_PLL_FREQUENCY, v)
-        self.frequency = v
+        self._frequency = v
         time.sleep(0.1)
 
     def set_PLL_enable_output(self, v):
@@ -144,7 +144,7 @@ class PLL(object):
     def disable_output(self):
         self.set_PLL_enable_output(0)
 
-    def frequency(self, v):
+    def frequency(self, v:int):
         self.set_PLL_frequency(v)
 
     def locked(self):
