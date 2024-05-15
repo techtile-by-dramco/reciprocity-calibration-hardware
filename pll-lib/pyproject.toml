@@ -18,3 +18,9 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
 ]
+
+dependencies = [
+  'time',
+  'struct',
+  'Adafruit_GPIO.I2C',
+]
