@@ -18,10 +18,10 @@
 #define CE          9 
 #define LED         6
 #define PPS         2
-#define SWITCH1_V1  3
+#define SWITCH1_V1  A6
 #define SWITCH2_V1  A1
 #define SWITCH2_V2  A2
-#define SWITCH3_V1  4
+#define SWITCH3_V1  A7
 #define SWITCH3_V2  A3
 #define SWITCH4_V1  A0
 
@@ -99,9 +99,16 @@
 #define SETTINGS_SAVE_TO_EEPROM                 EEPROM_SETTINGS // 0: Don't save, 1: only save settigs, 2: save complete register map
 #define SETTINGS_PLL_REFERENCE_CLOCK            (double) 10.0
 #define SETTINGS_PLL_REFERENCE_DIVIDER          1
-#define SETTINGS_LED_MODE                       LED_MODE_BLINK // 0: Off, 1: On, 2: Blink, 3: PPS blink, 4: Lock detect, 5: Lock detect && PPS blink, PPS not implemented in V1
+#define SETTINGS_LED_MODE                       LED_MODE_LOCK_DETECT // 0: Off, 1: On, 2: Blink, 3: PPS blink, 4: Lock detect, 5: Lock detect && PPS blink, PPS not implemented in V1
 #define SETTINGS_LED_BLINK_ON_TIME              20 // *10 ms
 #define SETTINGS_LED_BLINK_OFF_TIME             80 // *10 ms
+
+
+#define DEFAULT_PLL_POWER                       1
+#define DEFAULT_REGISTER_PLL_FREQUENCY_0        0x98 // Low byte 920 MHz default = 0x0398
+#define DEFAULT_REGISTER_PLL_FREQUENCY_1        0x03 // High byte
+#define DEFAULT_REGISTER_PLL_ENABLE_OUTPUT      1
+
 
 // --------- DIRECT ACCESS TO PLL REGISTERS ---------
 #define PLL_DIRECT_ACCESS_MASK                  0xF0
@@ -185,7 +192,13 @@ void setup(){
   digitalWrite(CE, LOW);
   delay(100);
   digitalWrite(CE, HIGH);
-  
+
+  // Set default values
+  registerMap[REGISTER_PLL_POWER] = DEFAULT_PLL_POWER;
+  registerMap[REGISTER_PLL_FREQUENCY] = DEFAULT_REGISTER_PLL_FREQUENCY_0;
+  registerMap[REGISTER_PLL_FREQUENCY+1] = DEFAULT_REGISTER_PLL_FREQUENCY_1;
+  registerMap[REGISTER_PLL_ENABLE_OUTPUT] = DEFAULT_REGISTER_PLL_ENABLE_OUTPUT;
+
   max2871.begin();
   //max2871.powerOn(true);              //set all hardware enable pins and deassert software shutdown bits
   //max2871.setPFD(10.0,1);             //inputs are reference frequency and R divider to set phase/frequency detector comparison frequency
